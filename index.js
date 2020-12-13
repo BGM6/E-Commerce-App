@@ -1,5 +1,6 @@
-import express from 'express';
-import chalk from 'chalk';
+const express =  require('express');
+const chalk = require('chalk');
+const usersRepo = require('./repositories/users');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -22,8 +23,18 @@ app.get('/', (req, res) => {
 
 });
 
-app.post('/', (req, res) => {
-    console.log(req.body);
+app.post('/', async (req, res) => {
+    const { email, password, passwordConfirmation } = req.body;
+
+    const existingUser = await usersRepo.getOneBy({email: email});
+    if(existingUser) {
+        return res.send('Email in use');
+    }
+
+    if (password !== passwordConfirmation) {
+        return res.send('Password must match')
+    }
+
     res.send('Account created successfully');
 });
 

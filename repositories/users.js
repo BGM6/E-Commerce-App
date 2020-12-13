@@ -1,5 +1,5 @@
-import fs from 'fs';
-import crypto from 'crypto';
+const  fs = require('fs');
+const crypto = require('crypto');
 
 class UsersRepository {
     constructor(filename) {
@@ -39,7 +39,6 @@ class UsersRepository {
     }
 
     async getOne(id) {
-        //find the given id in the user.json file;
         const records = await this.getAll();
         return records.find(record => record.id === id);
 
@@ -81,11 +80,4 @@ class UsersRepository {
     }
 }
 
-const test = async () => {
-    const repo = new UsersRepository('users.json');
-    const user = await repo.getOneBy({email: 'test@test.com'});
-
-    console.log(user)
-};
-
-test();
+module.exports = new UsersRepository('users.json');
