@@ -44,7 +44,7 @@ class UsersRepository {
         return record;
     }
 
-    async comparePassword(saved, supplied) {
+    async comparePasswords(saved, supplied) {
 
         //Saved password saved in our database. 'hashed.sal'
         //Supllied password given to us by a user trying to sign in
