@@ -4,17 +4,15 @@ const signupTemplate = require('../../views/admin/auth/signup');
 const signinTemplate = require('../../views/admin/auth/signin');
 
 router.get('/signup', (req, res) => {
-    res.send(signupTemplate({ req: req}));
+    res.send(signupTemplate({req: req}));
 });
 
 router.post('/signup', async (req, res) => {
     const {email, password, passwordConfirmation} = req.body;
-
     const existingUser = await usersRepo.getOneBy({email: email});
     if (existingUser) {
         return res.send('Email in use');
     }
-
     if (password !== passwordConfirmation) {
         return res.send('Password must match')
     }
@@ -36,9 +34,9 @@ router.get('/signin', (req, res) => {
 });
 
 router.post('/signin', async (req, res) => {
-    const { email, password } = req.body;
-    const user = await usersRepo.getOneBy({ email: email });
-    if(!user) {
+    const {email, password} = req.body;
+    const user = await usersRepo.getOneBy({email: email});
+    if (!user) {
         return res.send('Email not found');
     }
 
@@ -47,7 +45,7 @@ router.post('/signin', async (req, res) => {
         password
     )
 
-    if(!validPassword) {
+    if (!validPassword) {
         return res.send('Invalid password');
     }
 
