@@ -6,11 +6,10 @@ const cookieSession = require('cookie-session');
 const PORT = process.env.PORT || 5000;
 const app = express();
 //Middleware
+app.use(express.urlencoded({extended: true}));
 app.use(cookieSession({
     keys: ['dfasdfhjkdk32124@#$%^0a[s.d/?kjfhhfueij95d']
 }));
-app.use(express.urlencoded({extended: true}));
-// app.use(express.json());
 
 //Admin router from auth.js
 app.use(authRouter);
