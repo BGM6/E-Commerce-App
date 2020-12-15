@@ -1,5 +1,5 @@
 const express = require('express');
-const {check, validationResult} = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 const usersRepo = require('../../repositories/users');
 const signupTemplate = require('../../views/admin/auth/signup');
@@ -9,14 +9,13 @@ const {
     requirePassword,
     requirePasswordConfirmation,
     requireEmailExists,
-    requireValidPasswordForUser,
-
+    requireValidPasswordForUser
 } = require('./validators');
 
 const router = express.Router();
 
 router.get('/signup', (req, res) => {
-    res.send(signupTemplate({req}));
+    res.send(signupTemplate({ req }));
 });
 
 router.post(
@@ -26,13 +25,14 @@ router.post(
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
-            return res.send(signupTemplate({req, errors}));
+            return res.send(signupTemplate({ req, errors }));
         }
 
-        const {email, password, passwordConfirmation} = req.body;
-        const user = await usersRepo.create({email, password});
+        const { email, password, passwordConfirmation } = req.body;
+        const user = await usersRepo.create({ email, password });
 
         req.session.userId = user.id;
+
         res.send('Account created!!!');
     }
 );
@@ -43,20 +43,27 @@ router.get('/signout', (req, res) => {
 });
 
 router.get('/signin', (req, res) => {
-    res.send(signinTemplate());
+    res.send(signinTemplate({}));
 });
 
-router.post('/signin', [
-        requireEmailExists,
-        requireValidPasswordForUser
-    ],
+router.post(
+    '/signin',
+    [requireEmailExists, requireValidPasswordForUser],
     async (req, res) => {
         const errors = validationResult(req);
-        console.log(errors);
-        const {email} = req.body;
-        const user = await usersRepo.getOneBy({email});
+
+        if (!errors.isEmpty()) {
+            return res.send(signinTemplate({ errors }));
+        }
+
+        const { email } = req.body;
+
+        const user = await usersRepo.getOneBy({ email });
+
         req.session.userId = user.id;
+
         res.send('You are signed in!!!');
-    });
+    }
+);
 
 module.exports = router;

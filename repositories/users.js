@@ -12,31 +12,31 @@ class UsersRepository {
 
         this.filename = filename;
         try {
-            fs.accessSync(this.filename)
+            fs.accessSync(this.filename);
         } catch (err) {
             fs.writeFileSync(this.filename, '[]');
         }
-
     }
 
     async getAll() {
-        return JSON.parse(await fs.promises.readFile(this.filename), {
-            encoding: 'utf8',
-        });
+        return JSON.parse(
+            await fs.promises.readFile(this.filename, {
+                encoding: 'utf8'
+            })
+        );
     }
 
     async create(attrs) {
         attrs.id = this.randomId();
-        //Salt logic
+
         const salt = crypto.randomBytes(8).toString('hex');
-        const buf = await scrypt(attrs.password, salt, 64,);
+        const buf = await scrypt(attrs.password, salt, 64);
 
         const records = await this.getAll();
-        //Pushes the {password: with salt and hash}
         const record = {
             ...attrs,
             password: `${buf.toString('hex')}.${salt}`
-        }
+        };
         records.push(record);
 
         await this.writeAll(records);
@@ -45,24 +45,19 @@ class UsersRepository {
     }
 
     async comparePasswords(saved, supplied) {
-
-        //Saved password saved in our database. 'hashed.sal'
-        //Supllied password given to us by a user trying to sign in
-        // const result = saved.split('.');
-        // const hash = result[0];
-        // const salt = result[1];
-
-        //This line is the save as above variables
+        // Saved -> password saved in our database. 'hashed.salt'
+        // Supplied -> password given to us by a user trying sign in
         const [hashed, salt] = saved.split('.');
         const hashedSuppliedBuf = await scrypt(supplied, salt, 64);
 
         return hashed === hashedSuppliedBuf.toString('hex');
-
-
     }
 
     async writeAll(records) {
-        await fs.promises.writeFile(this.filename, JSON.stringify(records, null, 2));
+        await fs.promises.writeFile(
+            this.filename,
+            JSON.stringify(records, null, 2)
+        );
     }
 
     randomId() {
@@ -72,13 +67,12 @@ class UsersRepository {
     async getOne(id) {
         const records = await this.getAll();
         return records.find(record => record.id === id);
-
     }
 
     async delete(id) {
         const records = await this.getAll();
-        const filterRecords = records.filter(record => record.id !== id);
-        await this.writeAll(filterRecords)
+        const filteredRecords = records.filter(record => record.id !== id);
+        await this.writeAll(filteredRecords);
     }
 
     async update(id, attrs) {
@@ -104,6 +98,7 @@ class UsersRepository {
                     found = false;
                 }
             }
+
             if (found) {
                 return record;
             }
