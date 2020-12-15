@@ -5,6 +5,7 @@ const cookieSession = require('cookie-session');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
+app.use(express.static('public'));
 //Middleware
 app.use(express.urlencoded({extended: true}));
 app.use(cookieSession({
