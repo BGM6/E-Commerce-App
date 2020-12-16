@@ -1,6 +1,16 @@
-const Repository = require('./repository');
+const Repository = require('./repository.js');
 
 class ProductsRepository extends Repository {
+
+    async create(attrs) {
+        attrs.id = this.randomId();
+
+        const records = await this.getAll();
+        records.push(attrs);
+        await this.writeAll(records);
+
+        return attrs;
+    }
 
 }
 
