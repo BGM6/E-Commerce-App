@@ -6,6 +6,7 @@ module.exports = class Repository {
         if (!filename) {
             throw new Error('Creating a repository requires a filename');
         }
+
         this.filename = filename;
         try {
             fs.accessSync(this.filename);
@@ -13,7 +14,16 @@ module.exports = class Repository {
             fs.writeFileSync(this.filename, '[]');
         }
     }
-    
+
+    async create(attrs) {
+        attrs.id = this.randomId();
+
+        const records = await this.getAll();
+        records.push(attrs);
+        await this.writeAll(records);
+
+        return attrs;
+    }
 
     async getAll() {
         return JSON.parse(
@@ -22,7 +32,6 @@ module.exports = class Repository {
             })
         );
     }
-
 
     async writeAll(records) {
         await fs.promises.writeFile(
@@ -75,4 +84,4 @@ module.exports = class Repository {
             }
         }
     }
-}
+};
