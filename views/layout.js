@@ -11,7 +11,7 @@ module.exports = ({ content }) => {
         <link href="/css/main.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css"></link>
       </head>
-
+      
       <body>
         <header>
           <nav class="navbar navbar-top">
