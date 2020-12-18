@@ -13,7 +13,7 @@ router.post('/cart/products', async (req, res) => {
         // We dont have a cart, we need to create one,
         // and store the cart id on the req.session.cartId
         // property
-        cart = await cartsRepo.create({ items: [] });
+        cart = await cartsRepo.create({items: []});
         req.session.cartId = cart.id;
     } else {
         // We have a cart! Lets get it from the repository
@@ -26,13 +26,13 @@ router.post('/cart/products', async (req, res) => {
         existingItem.quantity++;
     } else {
         // add new product id to items array
-        cart.items.push({ id: req.body.productId, quantity: 1 });
+        cart.items.push({id: req.body.productId, quantity: 1});
     }
     await cartsRepo.update(cart.id, {
         items: cart.items
     });
 
-    res.send('Product added to cart');
+    res.redirect('/cart');
 });
 
 // Receive a GET request to show all items in cart
@@ -49,9 +49,18 @@ router.get('/cart', async (req, res) => {
         item.product = product;
     }
 
-    res.send(cartShowTemplate({ items: cart.items }));
+    res.send(cartShowTemplate({items: cart.items}));
 });
 
 // Receive a post request to delete an item from a cart
+router.post('/cart/products/delete', async (req, res) => {
+    const {itemId} = req.body;
+    const cart = await cartsRepo.getOne(req.session.cartId);
+
+    const items = cart.items.filter(item => item.id !== itemId);
+    await cartsRepo.update(req.session.cartId, {items: items});
+
+    res.redirect('/cart');
+});
 
 module.exports = router;
